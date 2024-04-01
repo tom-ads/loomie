@@ -1,0 +1,47 @@
+version: '3.1'
+
+services:
+  webserver:
+    image: nginx:alpine
+    working_dir: /application
+    volumes:
+      - ./packages/api:/application
+      - ./docker/nginx/nginx.conf:/etc/nginx/conf.d/default.conf
+    ports:
+      - 80:80
+    networks:
+      - loomie
+
+  php-fpm:
+    build: ./docker/php-fpm
+    working_dir: /application
+    volumes:
+      - ./packages/api:/application
+      - ./docker/php-fpm/overrides.ini:/usr/local/etc/php/conf.d/99-overrides.ini
+      - ./docker/php-fpm/xdebug.ini:/usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
+    networks:
+      - loomie
+
+  db: 
+    image: mysql/mysql-server:8.0
+    restart: always
+    ports:
+      - 3306:3306
+    environment:
+      MYSQL_DATABASE: loomie
+      MYSQL_USER: dev
+      MYSQL_PASSWORD: password
+      MYSQL_ROOT_USERNAME: dev
+    volumes:
+      - loomie_mysql:/var/lib/mysql
+    networks:
+      - loomie
+
+volumes:
+  loomie_mysql: 
+    driver: local
+
+networks:
+  loomie:
+    driver: bridge
+    
