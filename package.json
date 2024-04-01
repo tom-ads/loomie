@@ -1,0 +1,8 @@
+{
+	"name": "loomie",
+	"description": "Run advertisement campaigns for discount codes across multiple channels",
+	"private": true,
+	"workspaces": [
+		"packages/*"
+	]
+}
